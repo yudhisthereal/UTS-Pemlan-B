@@ -1,5 +1,5 @@
 import csv
-import csv
+import random
 from config import FILE_PATH
 
 def last_id(df):
