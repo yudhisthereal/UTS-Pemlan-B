@@ -11,8 +11,7 @@ def id_exists(target_id) -> bool:
     return False
 
 
-def search(query, target_column='name'):
-    data = pd.read_csv(FILE_PATH)
+def search(data, query, target_column='name'):
 
     # change missing values (NaN) in target_column to empty string
     data[target_column].fillna('(Empty)', inplace=True)

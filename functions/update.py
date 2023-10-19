@@ -37,5 +37,8 @@ def update_housing(id, column_name, new_value) -> int:
                 csv_writer.writeheader()
                 csv_writer.writerows(rows)
             return 1
-        else:
-            return 0
+        return 0
+
+
+
+
