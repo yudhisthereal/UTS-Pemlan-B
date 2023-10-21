@@ -11,3 +11,8 @@ COLUMN_NAMES_BY_CATEGORY = {
             'calculated host listing count': 'calculated_host_listings_count', 
             'availability': 'availability_365'
             }
+
+COLUMNS_IN_SHOW = ['id', 'name', 'host_name', 'neighbourhood', 'price']
+
+COLUMNS_IN_SEARCH = ['id', 'name', 'neighbourhood', 'room_type', 'price', 'minimum_nights', 'availability_365']
+COLUMNS_IN_SEARCH_MINIMAL = ['id', 'name', 'neighbourhood']
