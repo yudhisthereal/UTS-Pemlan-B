@@ -1,6 +1,7 @@
 import csv
 from config import *
 
+
 def update_housing(id, column_name, new_value) -> int:
     """
     Update a data in NYC Housing Dataset csv file.
@@ -21,7 +22,7 @@ def update_housing(id, column_name, new_value) -> int:
     data_updated = False
     rows = []
 
-    with open(FILE_PATH, 'r', encoding='utf-8') as file:
+    with open(get_temp_path(), 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         fieldnames = reader.fieldnames
 
@@ -32,13 +33,9 @@ def update_housing(id, column_name, new_value) -> int:
             rows.append(row)
 
         if data_updated:
-            with open(FILE_PATH, mode='w', newline='', encoding='utf-8') as file:
+            with open(get_temp_path(), mode='w', newline='', encoding='utf-8') as file:
                 csv_writer = csv.DictWriter(file, fieldnames=fieldnames)
                 csv_writer.writeheader()
                 csv_writer.writerows(rows)
             return 1
         return 0
-
-
-
-
