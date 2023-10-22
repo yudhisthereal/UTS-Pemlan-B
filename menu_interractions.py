@@ -139,8 +139,15 @@ def menu_update():
 
                         if (type(columns) == str):
                             column = columns
-                            new_value = input(
-                                f'enter new value for {column} : ')
+                            if column in ('latitude', 'longitude'):
+                                new_value = float_input(
+                                    f'enter new value for {column} : ')
+                            elif column in ('price', 'minimum_nights', 'availability_365'):
+                                new_value = int_input(
+                                    f'enter new value for {column} : ')
+                            else:
+                                new_value = input(
+                                    f'Enter new value for {column} :')
 
                             print(f'updating {column} to {new_value}...')
 
@@ -156,8 +163,16 @@ def menu_update():
 
                         else:
                             for column in columns:
-                                new_value = input(
-                                    f'enter new value for {column} : ')
+                                if column in ('latitude', 'longitude'):
+                                    new_value = float_input(
+                                        f'enter new value for {column} : ')
+                                elif column in ('price', 'minimum_nights', 'availability_365', 'host_id'):
+                                    new_value = int_input(
+                                        f'enter new value for {column} : ')
+                                else:
+                                    new_value = input(
+                                        f'Enter new value for {column} :')
+
 
                                 print(f'updating {column} to {new_value}...')
 

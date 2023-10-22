@@ -10,8 +10,6 @@ COLUMN_NAMES_BY_CATEGORY = {
             'room type': 'room_type',
             'price': 'price',
             'minimum nights': 'minimum_nights',
-            'reviews': ('number_of_reviews', 'last_review', 'reviews_per_month'),
-            'calculated host listing count': 'calculated_host_listings_count',
             'availability': 'availability_365'
 }
 
