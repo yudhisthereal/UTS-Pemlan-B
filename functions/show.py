@@ -3,6 +3,7 @@ from config import COLUMNS_IN_SHOW
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
+pd.set_option('display.width', 1000)
 
 
 def show_filtered(data, sorted_column, ascending):
@@ -21,6 +22,3 @@ def show(data):
     print('Here\'s your informations:')
     print(results)
 
-
-def show_stylised(data):
-    display(data)
