@@ -7,6 +7,26 @@ from functions.add import *
 from functions.update import *
 from config import COLUMNS_IN_SHOW, COLUMNS_IN_SEARCH
 
+def show_help():
+    print("""1. Show 
+          This function is used to display housing in order. sorting can 
+          be done by id, name, host name, price, and availability 
+          for a year.""")
+    print("""2. Search
+          This function is used to search for lodging based on 
+          id, name, host, neighborhood, price, and minimum nights. 
+          It will display all housing that matches the search.""")
+    print("""3. Add 
+          This function is used to add new housing data to the database. 
+          It will ask for important data that must be added, 
+          such as housing name, host id, host name, etc.""")
+    print("""4. Update 
+          This function is used to update housing data in the database. 
+          It will ask if you want to update the data. 
+          Press 'y' for yes and 'n' for no.""")
+    print("""5. Delete 
+          This function is used to delete housing data in the database. 
+          It will ask which housing ID that want to be deleted.""")
 
 def menu_show(data):
     show(data)

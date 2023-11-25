@@ -4,13 +4,13 @@ TEMP_PATH = None
 
 COLUMN_NAMES_BY_CATEGORY = {
     'name': 'name',
-            'host': ('host_id', 'host_name'),
-            'neighbourhood': ('neighbourhood_group', 'neighbourhood'),
-            'coordinates': ('latitude', 'longitude'),
-            'room type': 'room_type',
-            'price': 'price',
-            'minimum nights': 'minimum_nights',
-            'availability': 'availability_365'
+    'host': ('host_id', 'host_name'),
+    'neighbourhood': ('neighbourhood_group', 'neighbourhood'),
+    'coordinates': ('latitude', 'longitude'),
+    'room type': 'room_type',
+    'price': 'price',
+    'minimum nights': 'minimum_nights',
+    'availability': 'availability_365'
 }
 
 COLUMNS_IN_SHOW = ['id', 'name', 'host_name', 'neighbourhood', 'price']

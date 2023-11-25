@@ -11,14 +11,18 @@ def show_filtered(data, sorted_column, ascending):
     results.sort_values(by=sorted_column, ascending=ascending)
     results = results.head(50)
 
-    print('Here\'s your informations:')
-    print(results)
+    # print('Here\'s your informations:')
+    # print(results)
+
+    return results
 
 
 def show(data):
     results = data[COLUMNS_IN_SHOW]
     results = results.head(50)
 
-    print('Here\'s your informations:')
-    print(results)
+    # print('Here\'s your informations:')
+    # print(results)
+
+    return results
 

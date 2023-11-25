@@ -1,113 +1,163 @@
-from time import sleep
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+from functions.show import *
+from functions.search import *
+from functions.delete import *
+from functions.add import *
+from functions.update import *
+from config import get_temp_path
+from functions.save_data import *
 import csv
 import pandas as pd
-from enum import Enum
-from config import get_temp_path
-from functions.custom_input import *
-from functions.save_data import *
-
-from menu_interractions import *
 
 if get_temp_path() == None:
     create_temp()
 
 df = pd.read_csv(get_temp_path())
 
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
+
+def onFrameConfigure(canvas):
+    '''Reset the scroll region to encompass the inner frame'''
+    canvas.configure(scrollregion=canvas.bbox("all"))
 
 
-class Choice(Enum):
-    HELP = 0
-    SHOW = 1
-    SEARCH = 2
-    ADD = 3
-    UPDATE = 4
-    DELETE = 5
-    SAVE_CHANGES = 6
-    EXIT = 7
+class Table():
+
+    def __init__(self, root, data, headers):
+        canvas = Canvas(root)
+        frame = ttk.Frame(canvas)
+        frame_head = ttk.Frame(root)
+
+        scroll = ttk.Scrollbar(root, orient='vertical', command=canvas.yview)
+        canvas.configure(yscrollcommand=scroll.set)
+
+        frame_head.pack(side=TOP, fill=X)
+        scroll.pack(side=RIGHT, fill=Y)
+        canvas.pack(side=LEFT, fill=BOTH, expand=True)
+        canvas.create_window((4, 4), window=frame, anchor="nw")
+
+        frame.bind("<Configure>", lambda event,
+                   canvas=canvas: onFrameConfigure(canvas))
+
+        total_rows = len(data.index)
+        if total_rows > 50:
+            total_rows = 50
+        # code for creating table
+        width = (5, 50, 15, 25, 5)
+        for i, header in enumerate(headers):
+            self.e = ttk.Entry(
+                frame_head, width=width[i], font=('Montserrat Medium', 11))
+
+            self.e.grid(row=0, column=i, sticky='n')
+            self.e.insert(END, header.title())
+
+        for i in range(1, total_rows):
+            for j, header in enumerate(headers):
+                self.e = ttk.Entry(frame, width=width[j],
+                                   font=('Montserrat', 11))
+
+                self.e.grid(row=i+1, column=j)
+                self.e.insert(END, data.iloc[i][header])
 
 
-def show_help():
-    print("""1. Show 
-          This function is used to display housing in order. sorting can 
-          be done by id, name, host name, price, and availability 
-          for a year.""")
-    print("""2. Search
-          This function is used to search for lodging based on 
-          id, name, host, neighborhood, price, and minimum nights. 
-          It will display all housing that matches the search.""")
-    print("""3. Add 
-          This function is used to add new housing data to the database. 
-          It will ask for important data that must be added, 
-          such as housing name, host id, host name, etc.""")
-    print("""4. Update 
-          This function is used to update housing data in the database. 
-          It will ask if you want to update the data. 
-          Press 'y' for yes and 'n' for no.""")
-    print("""5. Delete 
-          This function is used to delete housing data in the database. 
-          It will ask which housing ID that want to be deleted.""")
+def darkstyle(root):
+    root.tk.call('source', 'theme/azure.tcl')
+    root.tk.call('set_theme', 'dark')
 
 
-print("="*5 + " Welcome to New York Housing Admin" + "="*5)
-while True:
-    print('')
-    print("What do you wish to do?")
-    print("0. Show help")
-    print("1. Show housing data")
-    print("2. Search for housing data")
-    print("3. Add new housing data")
-    print("4. Update housing data")
-    print("5. Delete housing data")
-    print("6. Save changes")
-    print("7. Exit")
+def main_window():
+    window = Tk()
+    window.geometry('1080x720+100+32')
+    window.title("NYC Housing Admin")
+    window.resizable(False, False)
+    darkstyle(window)
 
-    choice = int_input('enter your choice : ')
-    choice = int(choice)
+    title_font = ('Montserrat Bold', 24)
+    title = ttk.Label(window, text='NYC Housing Admin', font=title_font)
+    title.pack(side=TOP, pady=16)
 
-    if choice == Choice.HELP.value:
-        show_help()
+    return window
 
-    elif choice == Choice.SHOW.value:
-        menu_show(df)
 
-    elif choice == Choice.SEARCH.value:
-        menu_search(df)
+def create_menu(root):
+    frame = ttk.Frame(root)
+    frame.pack(side=TOP, pady=32)
 
-    elif choice == Choice.ADD.value:
-        menu_add(df)
-        has_unsaved_changes(True)
+    # menu_width = 10
+    help_button = ttk.Button(
+        master=frame, command=func_help, text="Help")
+    show_button = ttk.Button(
+        master=frame, command=func_show, text="Show Data")
+    search_button = ttk.Button(
+        master=frame, command=func_search, text="Search")
+    add_button = ttk.Button(master=frame, command=func_add,
+                            text="Add")
+    update_button = ttk.Button(
+        master=frame, command=func_update, text="Update")
+    delete_button = ttk.Button(
+        master=frame, command=func_delete, text="Delete")
+    save_button = ttk.Button(
+        master=frame, command=func_save, text="Save Changes")
+    exit_button = ttk.Button(
+        master=frame, command=func_exit, text="Exit")
 
-    elif choice == Choice.UPDATE.value:
-        menu_update()
-        has_unsaved_changes(True)
+    for i, widget in enumerate(frame.winfo_children()):
+        widget.grid(row=0, column=i, padx=8, pady=5, sticky='nesw')
 
-    elif choice == Choice.DELETE.value:
-        menu_delete(df)
-        has_unsaved_changes(True)
 
-    elif choice == Choice.SAVE_CHANGES.value:
-        if has_unsaved_changes():
+def create_table(root):
+    table = Table(root, df, COLUMNS_IN_SHOW)
+    return table
+
+
+def func_help():
+    pass
+
+
+def func_show():
+    pass
+
+
+def func_search():
+    pass
+
+
+def func_add():
+    pass
+
+
+def func_update():
+    pass
+
+
+def func_delete():
+    pass
+
+
+def func_save():
+    pass
+
+
+def func_exit():
+    if has_unsaved_changes() == True:
+        should_save = messagebox.askyesnocancel(title='Warning', message='Save Changes?')
+        if should_save == None:
+            return
+        elif should_save:
             save()
-            print('Saved successfully!')
-        else:
-            print("You have no unsaved changes.")
-        sleep(0.5)
-        print()
+    destroy_temp()
+    window.destroy()
+    quit()
 
-    elif choice == Choice.EXIT.value:
-        if has_unsaved_changes():
-            print('You have unsaved changes.')
-            confirm_save = yesno_input('Would you like to save them? (y/n) ')
-            if confirm_save == 'y':
-                save()
 
-        destroy_temp()
-        exit(0)
+# Main Window
+window = main_window()
+window.protocol('WM_DELETE_WINDOW', func_exit)
 
-    else:
-        print('invalid choice.')
-        sleep(0.5)
-    
-    df = pd.read_csv(get_temp_path())
+# Content
+create_menu(window)
+table = create_table(window)
+
+if __name__ == '__main__':
+    window.mainloop()
