@@ -10,6 +10,7 @@ COLUMNS_IN_SEARCH = ['id', 'name', 'host_name', 'neighbourhood',
                      'room_type', 'price', 'minimum_nights', 'availability_365']
 WIDTHS_IN_SEARCH = (5, 45, 15, 15, 10, 5, 5, 5)
 
+WRITE_ALLOWED_FIELDS = ['name', 'host_id', 'host_name', 'neighbourhood_group', 'neighbourhood', 'latitude' , 'longitude', 'room_type', 'price', 'minimum_nights', 'availability_365']
 
 def set_temp_path(path):
     global TEMP_PATH

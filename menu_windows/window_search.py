@@ -53,5 +53,5 @@ class WindowSearch(tk.Toplevel):
     
     def func_ok(self):
         self.df = search(self.df, self.query.get(), self.selected_searchby.get())
-        self.update_df(self.df, None, None, False)
+        self.update_df(self.df, COLUMNS_IN_SEARCH, WIDTHS_IN_SEARCH)
         self.destroy()

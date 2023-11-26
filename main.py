@@ -12,6 +12,7 @@ from menu_windows.window_help import WindowHelp
 from menu_windows.window_filtersort import WindowFilterSort
 from menu_windows.window_search import WindowSearch
 from menu_windows.window_add import WindowAdd
+from menu_windows.window_update import WindowUpdate
 import csv
 import pandas as pd
 
@@ -26,13 +27,15 @@ table = None
 
 
 def onFrameConfigure(canvas):
-    '''Reset the v_scroll region to encompass the inner frame'''
+    '''Reset the scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
 
-def update_shown_df(data, shown_cols, shown_w):
-    global window, table, shown_df, shown_columns, shown_widths
-    shown_df = data
+def update_shown_df(data=df, shown_cols=COLUMNS_IN_SHOW, shown_w=WIDTHS_IN_SHOW, update_data=False):
+    global window, table, shown_df, shown_columns, shown_widths, df
+    if update_data:
+        df = pd.read_csv(get_temp_path())
+    shown_df = data if not update_data else df
     shown_columns = shown_cols
     shown_widths = shown_w
     table.destroy()
@@ -60,9 +63,9 @@ class Table():
         self.v_scroll.pack(side=RIGHT, fill=Y)
         self.h_scroll.pack(side=BOTTOM, fill=X)
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
-        self.canvas.create_window((4, 4), window=frame, anchor="nw")
+        self.canvas.create_window((0, 0), window=frame, anchor="nw")
 
-        frame.bind("<Configure>", lambda event,
+        self.canvas.bind("<Configure>", lambda event,
                    canvas=self.canvas: onFrameConfigure(self.canvas))
 
         total_rows = len(data.index)
@@ -89,6 +92,7 @@ class Table():
         self.canvas.destroy()
         self.frame_head.destroy()
         self.v_scroll.destroy()
+        self.h_scroll.destroy()
 
 
 def darkstyle(root):
@@ -158,11 +162,12 @@ def func_search():
 
 def func_add():
     global window
-    WindowAdd(window, df).grab_set()
+    WindowAdd(window, df, update_shown_df).grab_set()
 
 
 def func_update():
-    pass
+    global window
+    WindowUpdate(window, df, update_shown_df).grab_set()
 
 
 def func_delete():

@@ -4,14 +4,12 @@ from tkinter import ttk
 from functions.add import add_housing
 from functions.save_data import has_unsaved_changes
 
-def onFrameConfigure(canvas):
-    '''Reset the v_scroll region to encompass the inner frame'''
-    canvas.configure(scrollregion=canvas.bbox("all"))
 
 class WindowAdd(tk.Toplevel):
-    def __init__(self, parent, df):
+    def __init__(self, parent, df, update_data):
         super().__init__(parent)
         self.df = df
+        self.update_data = update_data
         self.name = tk.StringVar()
         self.host_id = tk.StringVar() 
         self.host_name = tk.StringVar() 
@@ -24,9 +22,9 @@ class WindowAdd(tk.Toplevel):
         self.minimum_nights = tk.StringVar() 
         self.availability = tk.StringVar()
 
-        self.geometry('480x720')
-        self.title('Sort')
-        tk.Label(self, text='Sort', font=('Montserrat Medium', 16)).pack(
+        self.geometry('600x720')
+        self.title('Add Housing')
+        tk.Label(self, text='Add Housing', font=('Montserrat Medium', 16)).pack(
             side=tk.TOP, pady=16)
         
 
@@ -64,29 +62,29 @@ class WindowAdd(tk.Toplevel):
         self.numeric_entries = (self.latitude, self.longitude, self.price, self.host_id, self.availability, self.minimum_nights)
 
         # Placing
-        label_name.grid(row=0, column=0, pady=8, sticky='e')
-        label_host_id.grid(row=1, column=0, pady=8, sticky='e')
-        label_host_name.grid(row=2, column=0, pady=8, sticky='e')
-        label_neighbourhood_group.grid(row=3, column=0, pady=8, sticky='e')
-        label_neighbourhood.grid(row=4, column=0, pady=8, sticky='e')
-        label_latitude.grid(row=5, column=0, pady=8, sticky='e')
-        label_longitude.grid(row=6, column=0, pady=8, sticky='e')
-        label_room_type.grid(row=7, column=0, pady=8, sticky='e')
-        label_price.grid(row=8, column=0, pady=8, sticky='e')
-        label_minimum_nights.grid(row=9, column=0, pady=8, sticky='e')
-        label_availability.grid(row=10, column=0, pady=8, sticky='e')
+        label_name.grid(row=0, column=0, pady=8, padx=16, sticky='e')
+        label_host_id.grid(row=1, column=0, pady=8, padx=16, sticky='e')
+        label_host_name.grid(row=2, column=0, pady=8, padx=16, sticky='e')
+        label_neighbourhood_group.grid(row=3, column=0, pady=8, padx=16, sticky='e')
+        label_neighbourhood.grid(row=4, column=0, pady=8, padx=16, sticky='e')
+        label_latitude.grid(row=5, column=0, pady=8, padx=16, sticky='e')
+        label_longitude.grid(row=6, column=0, pady=8, padx=16, sticky='e')
+        label_room_type.grid(row=7, column=0, pady=8, padx=16, sticky='e')
+        label_price.grid(row=8, column=0, pady=8, padx=16, sticky='e')
+        label_minimum_nights.grid(row=9, column=0, pady=8, padx=16, sticky='e')
+        label_availability.grid(row=10, column=0, pady=8, padx=16, sticky='e')
 
-        entry_name.grid(row=0, column=1, pady=8, sticky='w')
-        entry_host_id.grid(row=1, column=1, pady=8, sticky='w')
-        entry_host_name.grid(row=2, column=1, pady=8, sticky='w')
-        entry_neighbourhood_group.grid(row=3, column=1, pady=8, sticky='w')
-        entry_neighbourhood.grid(row=4, column=1, pady=8, sticky='w')
-        entry_latitude.grid(row=5, column=1, pady=8, sticky='w')
-        entry_longitude.grid(row=6, column=1, pady=8, sticky='w')
-        entry_room_type.grid(row=7, column=1, pady=8, sticky='w')
-        entry_price.grid(row=8, column=1, pady=8, sticky='w')
-        entry_minimum_nights.grid(row=9, column=1, pady=8, sticky='w')
-        entry_availability.grid(row=10, column=1, pady=8, sticky='w')
+        entry_name.grid(row=0, column=1, pady=8, padx=16, sticky='we')
+        entry_host_id.grid(row=1, column=1, pady=8, padx=16, sticky='we')
+        entry_host_name.grid(row=2, column=1, pady=8, padx=16, sticky='we')
+        entry_neighbourhood_group.grid(row=3, column=1, pady=8, padx=16, sticky='we')
+        entry_neighbourhood.grid(row=4, column=1, pady=8, padx=16, sticky='we')
+        entry_latitude.grid(row=5, column=1, pady=8, padx=16, sticky='we')
+        entry_longitude.grid(row=6, column=1, pady=8, padx=16, sticky='we')
+        entry_room_type.grid(row=7, column=1, pady=8, padx=16, sticky='we')
+        entry_price.grid(row=8, column=1, pady=8, padx=16, sticky='we')
+        entry_minimum_nights.grid(row=9, column=1, pady=8, padx=16, sticky='we')
+        entry_availability.grid(row=10, column=1, pady=8, padx=16, sticky='we')
 
         frame.pack(fill=tk.BOTH, expand=True, anchor='center')
 
@@ -108,6 +106,7 @@ class WindowAdd(tk.Toplevel):
                 )
             messagebox.showinfo(message=f'Housing {self.name.get()} Has Been Added!')
             has_unsaved_changes(True)
+            self.update_data(update_data=True)
             self.destroy()
         
     
@@ -117,6 +116,5 @@ class WindowAdd(tk.Toplevel):
                 x = float(entry.get())
             except ValueError:
                 messagebox.showerror(message='Please Enter Valid Number for "Host ID", "Latitude", "Longitude", "Price", "Minimum Nights", and "Avaliability"')
-                self.bell()
                 return False
         return True
