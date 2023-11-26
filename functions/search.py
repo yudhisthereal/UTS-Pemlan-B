@@ -17,7 +17,7 @@ def id_exists(target_id) -> bool:
     return False
 
 
-def search(data, query, target_column='name', minimal=False):
+def search(data, query, target_column):
 
     # change missing values (NaN) in target_column to empty string
     data[target_column].fillna('(Empty)', inplace=True)
@@ -33,8 +33,7 @@ def search(data, query, target_column='name', minimal=False):
         filtered_data = data[data[target_column].str.contains(
             str(query), case=False)]
 
-    selected_columns = COLUMNS_IN_SEARCH if not minimal else COLUMNS_IN_SEARCH_MINIMAL
-    results = filtered_data[selected_columns]
+    results = filtered_data[COLUMNS_IN_SEARCH]
 
     if target_column == 'price': 
         results = results.sort_values(

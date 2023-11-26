@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from functions.show import get_filtered
+from config import COLUMNS_IN_SHOW, WIDTHS_IN_SHOW
 
 class WindowFilterSort(tk.Toplevel):
     def __init__(self, parent, df, update_df):
@@ -49,5 +50,5 @@ class WindowFilterSort(tk.Toplevel):
     
     def func_ok(self):
         self.df = get_filtered(self.df, self.selected_orderby.get(), self.selected_order.get() == 'Ascending')
-        self.update_df(self.df)
+        self.update_df(self.df, COLUMNS_IN_SHOW, WIDTHS_IN_SHOW)
         self.destroy()

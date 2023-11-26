@@ -6,9 +6,9 @@ TEMP_PATH = None
 COLUMNS_IN_SHOW = ['id', 'name', 'host_name', 'neighbourhood', 'price']
 WIDTHS_IN_SHOW = (5, 50, 15, 25, 5)
 
-COLUMNS_IN_SEARCH = ['id', 'name', 'neighbourhood',
+COLUMNS_IN_SEARCH = ['id', 'name', 'host_name', 'neighbourhood',
                      'room_type', 'price', 'minimum_nights', 'availability_365']
-WIDTHS_IN_SEARCH = (5, 45, 25, 10, 5, 5, 5)
+WIDTHS_IN_SEARCH = (5, 45, 15, 15, 10, 5, 5, 5)
 
 
 def set_temp_path(path):

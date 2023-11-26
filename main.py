@@ -6,10 +6,11 @@ from functions.search import *
 from functions.delete import *
 from functions.add import *
 from functions.update import *
-from config import get_temp_path
+from config import *
 from functions.save_data import *
 from menu_windows.window_help import WindowHelp
 from menu_windows.window_filtersort import WindowFilterSort
+from menu_windows.window_search import WindowSearch
 import csv
 import pandas as pd
 
@@ -18,27 +19,29 @@ if get_temp_path() == None:
 
 df = pd.read_csv(get_temp_path())
 shown_df = df.head(50)
+shown_columns = COLUMNS_IN_SHOW
+shown_widths = WIDTHS_IN_SHOW
 table = None
 
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
-def update_shown_df(data):
-    global window
-    global table
-    global shown_df
+def update_shown_df(data, shown_cols, shown_w):
+    global window, table, shown_df, shown_columns, shown_widths
     shown_df = data
+    shown_columns = shown_cols
+    shown_widths = shown_w
     table.destroy()
-    table.create(window, shown_df, COLUMNS_IN_SHOW)
+    table.create(window, shown_df, shown_columns, shown_widths)
 
 
 class Table():
 
-    def __init__(self, root, data, headers):
-        self.create(root, data, headers)
+    def __init__(self, root, data, headers, widths):
+        self.create(root, data, headers, widths)
     
-    def create(self, root, data, headers):
+    def create(self, root, data, headers, widths):
         self.canvas = Canvas(root)
         frame = ttk.Frame(self.canvas)
         self.frame_head = ttk.Frame(root)
@@ -57,18 +60,18 @@ class Table():
         total_rows = len(data.index)
         if total_rows > 50:
             total_rows = 50
+        
         # code for creating table
-        width = WIDTHS_IN_SHOW
         for i, header in enumerate(headers):
             self.e = ttk.Entry(
-                self.frame_head, width=width[i], font=('Montserrat Medium', 11))
+                self.frame_head, width=widths[i], font=('Montserrat Medium', 11))
 
             self.e.grid(row=0, column=i, sticky='n')
             self.e.insert(END, header.title())
 
         for i in range(total_rows):
             for j, header in enumerate(headers):
-                self.e = ttk.Entry(frame, width=width[j],
+                self.e = ttk.Entry(frame, width=widths[j],
                                    font=('Montserrat', 11))
 
                 self.e.grid(row=i+1, column=j)
@@ -127,7 +130,7 @@ def create_menu(root):
 
 def create_table(root):
     global table
-    table = Table(root, shown_df, COLUMNS_IN_SHOW)
+    table = Table(root, shown_df, shown_columns, shown_widths)
 
 
 def func_help():
@@ -143,7 +146,8 @@ def func_filtersort():
 
 
 def func_search():
-    pass
+    global window
+    WindowSearch(window, df, update_shown_df).grab_set()
 
 
 def func_add():
