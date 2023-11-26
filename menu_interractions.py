@@ -28,38 +28,10 @@ def show_help():
           This function is used to delete housing data in the database. 
           It will ask which housing ID that want to be deleted.""")
 
-def menu_show(data):
-    show(data)
-
-    # Ask if the user wants to apply filters
-    apply_filter = yesno_input('Do you want to filter the data? (y/n) ')
-
-    while apply_filter == 'y':
-
-        print("""Columns' indices
-        1. Housing ID
-        2. Housing Name
-        3. Host Name
-        4. Neighbourhood
-        5. Price
-        """)
-        sort_by = int(int_input('Sort by which column? (1/2/3/4/5) '))
-        sort_by -= 1
-        while sort_by not in range(5):
-            print('Your choice must be one of (1/2/3/4/5)')
-            sort_by = int(int_input('Sort by which column? (1/2/3/4/5) '))
-            sort_by -= 1
-
-        ascending = True if yesno_input(
-            'sort ascending? (y/n) ') == 'y' else False
-
-        show_filtered(data, COLUMNS_IN_SHOW[sort_by], ascending)
-
-        print()
-        apply_filter = yesno_input('Do you want to re-filter the data? (y/n) ')
-
-    print('Alrighty!')
-    sleep(0.5)
+def menu_show(data, ascending):
+    ascending = True if yesno_input(
+        'sort ascending? (y/n) ') == 'y' else False
+    show_filtered(data, COLUMNS_IN_SHOW[sort_by], ascending)
 
 
 def menu_search(df):

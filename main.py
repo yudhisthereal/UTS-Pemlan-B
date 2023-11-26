@@ -8,6 +8,8 @@ from functions.add import *
 from functions.update import *
 from config import get_temp_path
 from functions.save_data import *
+from menu_windows.window_help import WindowHelp
+from menu_windows.window_filtersort import WindowFilterSort
 import csv
 import pandas as pd
 
@@ -15,50 +17,67 @@ if get_temp_path() == None:
     create_temp()
 
 df = pd.read_csv(get_temp_path())
-
+shown_df = df.head(50)
+table = None
 
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
+def update_shown_df(data):
+    global window
+    global table
+    global shown_df
+    shown_df = data
+    table.destroy()
+    table.create(window, shown_df, COLUMNS_IN_SHOW)
+
 
 class Table():
 
     def __init__(self, root, data, headers):
-        canvas = Canvas(root)
-        frame = ttk.Frame(canvas)
-        frame_head = ttk.Frame(root)
+        self.create(root, data, headers)
+    
+    def create(self, root, data, headers):
+        self.canvas = Canvas(root)
+        frame = ttk.Frame(self.canvas)
+        self.frame_head = ttk.Frame(root)
 
-        scroll = ttk.Scrollbar(root, orient='vertical', command=canvas.yview)
-        canvas.configure(yscrollcommand=scroll.set)
+        self.scroll = ttk.Scrollbar(root, orient='vertical', command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.scroll.set)
 
-        frame_head.pack(side=TOP, fill=X)
-        scroll.pack(side=RIGHT, fill=Y)
-        canvas.pack(side=LEFT, fill=BOTH, expand=True)
-        canvas.create_window((4, 4), window=frame, anchor="nw")
+        self.frame_head.pack(side=TOP, fill=X)
+        self.scroll.pack(side=RIGHT, fill=Y)
+        self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
+        self.canvas.create_window((4, 4), window=frame, anchor="nw")
 
         frame.bind("<Configure>", lambda event,
-                   canvas=canvas: onFrameConfigure(canvas))
+                   canvas=self.canvas: onFrameConfigure(self.canvas))
 
         total_rows = len(data.index)
         if total_rows > 50:
             total_rows = 50
         # code for creating table
-        width = (5, 50, 15, 25, 5)
+        width = WIDTHS_IN_SHOW
         for i, header in enumerate(headers):
             self.e = ttk.Entry(
-                frame_head, width=width[i], font=('Montserrat Medium', 11))
+                self.frame_head, width=width[i], font=('Montserrat Medium', 11))
 
             self.e.grid(row=0, column=i, sticky='n')
             self.e.insert(END, header.title())
 
-        for i in range(1, total_rows):
+        for i in range(total_rows):
             for j, header in enumerate(headers):
                 self.e = ttk.Entry(frame, width=width[j],
                                    font=('Montserrat', 11))
 
                 self.e.grid(row=i+1, column=j)
                 self.e.insert(END, data.iloc[i][header])
+
+    def destroy(self):
+        self.canvas.destroy()
+        self.frame_head.destroy()
+        self.scroll.destroy()
 
 
 def darkstyle(root):
@@ -88,7 +107,7 @@ def create_menu(root):
     help_button = ttk.Button(
         master=frame, command=func_help, text="Help")
     show_button = ttk.Button(
-        master=frame, command=func_show, text="Show Data")
+        master=frame, command=func_filtersort, text="Sort Data")
     search_button = ttk.Button(
         master=frame, command=func_search, text="Search")
     add_button = ttk.Button(master=frame, command=func_add,
@@ -107,16 +126,20 @@ def create_menu(root):
 
 
 def create_table(root):
-    table = Table(root, df, COLUMNS_IN_SHOW)
-    return table
+    global table
+    table = Table(root, shown_df, COLUMNS_IN_SHOW)
 
 
 def func_help():
-    pass
+    global window
+    help = WindowHelp(window)
+    help.grab_set()
 
 
-def func_show():
-    pass
+def func_filtersort():
+    global window
+    filtersort = WindowFilterSort(window, df, update_shown_df)
+    filtersort.grab_set()
 
 
 def func_search():
@@ -136,11 +159,15 @@ def func_delete():
 
 
 def func_save():
-    pass
+    if has_unsaved_changes():
+        save()
+        messagebox.showinfo(message='Saved Successfully!')
+    else:
+        messagebox.showinfo(message='No Unsaved Changes')
 
 
 def func_exit():
-    if has_unsaved_changes() == True:
+    if has_unsaved_changes():
         should_save = messagebox.askyesnocancel(title='Warning', message='Save Changes?')
         if should_save == None:
             return
@@ -157,7 +184,7 @@ window.protocol('WM_DELETE_WINDOW', func_exit)
 
 # Content
 create_menu(window)
-table = create_table(window)
+create_table(window)
 
 if __name__ == '__main__':
     window.mainloop()
