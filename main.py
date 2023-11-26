@@ -11,6 +11,7 @@ from functions.save_data import *
 from menu_windows.window_help import WindowHelp
 from menu_windows.window_filtersort import WindowFilterSort
 from menu_windows.window_search import WindowSearch
+from menu_windows.window_add import WindowAdd
 import csv
 import pandas as pd
 
@@ -23,9 +24,11 @@ shown_columns = COLUMNS_IN_SHOW
 shown_widths = WIDTHS_IN_SHOW
 table = None
 
+
 def onFrameConfigure(canvas):
     '''Reset the v_scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
+
 
 def update_shown_df(data, shown_cols, shown_w):
     global window, table, shown_df, shown_columns, shown_widths
@@ -40,14 +43,16 @@ class Table():
 
     def __init__(self, root, data, headers, widths):
         self.create(root, data, headers, widths)
-    
+
     def create(self, root, data, headers, widths):
         self.canvas = Canvas(root)
         frame = ttk.Frame(self.canvas)
         self.frame_head = ttk.Frame(root)
 
-        self.v_scroll = ttk.Scrollbar(root, orient='vertical', command=self.canvas.yview)
-        self.h_scroll = ttk.Scrollbar(root, orient='horizontal', command=self.canvas.xview)
+        self.v_scroll = ttk.Scrollbar(
+            root, orient='vertical', command=self.canvas.yview)
+        self.h_scroll = ttk.Scrollbar(
+            root, orient='horizontal', command=self.canvas.xview)
         self.canvas.configure(yscrollcommand=self.v_scroll.set)
         self.canvas.configure(xscrollcommand=self.h_scroll.set)
 
@@ -63,7 +68,7 @@ class Table():
         total_rows = len(data.index)
         if total_rows > 50:
             total_rows = 50
-        
+
         # code for creating table
         for i, header in enumerate(headers):
             self.e = ttk.Entry(
@@ -138,14 +143,12 @@ def create_table(root):
 
 def func_help():
     global window
-    help = WindowHelp(window)
-    help.grab_set()
+    WindowHelp(window).grab_set()
 
 
 def func_filtersort():
     global window
-    filtersort = WindowFilterSort(window, df, update_shown_df)
-    filtersort.grab_set()
+    WindowFilterSort(window, df, update_shown_df).grab_set()
 
 
 def func_search():
@@ -154,7 +157,8 @@ def func_search():
 
 
 def func_add():
-    pass
+    global window
+    WindowAdd(window, df).grab_set()
 
 
 def func_update():
@@ -175,7 +179,8 @@ def func_save():
 
 def func_exit():
     if has_unsaved_changes():
-        should_save = messagebox.askyesnocancel(title='Warning', message='Save Changes?')
+        should_save = messagebox.askyesnocancel(
+            title='Warning', message='Save Changes?')
         if should_save == None:
             return
         elif should_save:
