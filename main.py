@@ -24,7 +24,7 @@ shown_widths = WIDTHS_IN_SHOW
 table = None
 
 def onFrameConfigure(canvas):
-    '''Reset the scroll region to encompass the inner frame'''
+    '''Reset the v_scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
 def update_shown_df(data, shown_cols, shown_w):
@@ -46,11 +46,14 @@ class Table():
         frame = ttk.Frame(self.canvas)
         self.frame_head = ttk.Frame(root)
 
-        self.scroll = ttk.Scrollbar(root, orient='vertical', command=self.canvas.yview)
-        self.canvas.configure(yscrollcommand=self.scroll.set)
+        self.v_scroll = ttk.Scrollbar(root, orient='vertical', command=self.canvas.yview)
+        self.h_scroll = ttk.Scrollbar(root, orient='horizontal', command=self.canvas.xview)
+        self.canvas.configure(yscrollcommand=self.v_scroll.set)
+        self.canvas.configure(xscrollcommand=self.h_scroll.set)
 
         self.frame_head.pack(side=TOP, fill=X)
-        self.scroll.pack(side=RIGHT, fill=Y)
+        self.v_scroll.pack(side=RIGHT, fill=Y)
+        self.h_scroll.pack(side=BOTTOM, fill=X)
         self.canvas.pack(side=LEFT, fill=BOTH, expand=True)
         self.canvas.create_window((4, 4), window=frame, anchor="nw")
 
@@ -80,7 +83,7 @@ class Table():
     def destroy(self):
         self.canvas.destroy()
         self.frame_head.destroy()
-        self.scroll.destroy()
+        self.v_scroll.destroy()
 
 
 def darkstyle(root):
