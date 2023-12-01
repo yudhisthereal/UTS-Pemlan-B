@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from threading import Thread
 from functions.search import search
 from config import COLUMNS_IN_SEARCH, WIDTHS_IN_SEARCH
 
@@ -52,6 +53,10 @@ class WindowSearch(tk.Toplevel):
                 command=self.destroy).pack(side=tk.LEFT, expand=True, pady=32)
     
     def func_ok(self):
-        self.df = search(self.df, self.query.get(), self.selected_searchby.get())
-        self.update_df(self.df, COLUMNS_IN_SEARCH, WIDTHS_IN_SEARCH)
+        thread = Thread(target=search_func, args=(self.df, self.query.get(), self.selected_searchby.get(), self.update_df))
+        thread.start()
         self.destroy()
+
+def search_func(df, query, search_by, update_func):
+    df = search(df, query, search_by)
+    update_func(df, COLUMNS_IN_SEARCH, WIDTHS_IN_SEARCH)

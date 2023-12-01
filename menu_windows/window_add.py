@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from threading import Thread
 from functions.add import add_housing
 from functions.save_data import has_unsaved_changes
 
@@ -99,14 +100,13 @@ class WindowAdd(tk.Toplevel):
 
     def func_ok(self):
         if self.validate_inputs():
-            add_housing(self.df, self.name.get(), self.host_id.get(), self.host_name.get(), 
+            messagebox.showinfo(message=f'Housing {self.name.get()} Has Been Added!')
+            thread = Thread(target=add_func, args=(self.update_data, self.df, self.name.get(), self.host_id.get(), self.host_name.get(), 
                     self.neighbourhood_group.get(), self.neighbourhood.get(), self.latitude.get(), 
                     self.longitude.get(), self.room_type.get(), self.price.get(), 
-                    self.minimum_nights.get(), self.availability.get()
-                )
-            messagebox.showinfo(message=f'Housing {self.name.get()} Has Been Added!')
-            has_unsaved_changes(True)
-            self.update_data(update_data=True)
+                    self.minimum_nights.get(), self.availability.get())
+                    )
+            thread.start()
             self.destroy()
         
     
@@ -118,3 +118,15 @@ class WindowAdd(tk.Toplevel):
                 messagebox.showerror(message='Please Enter Valid Number for "Host ID", "Latitude", "Longitude", "Price", "Minimum Nights", and "Avaliability"')
                 return False
         return True
+
+def add_func(update_data, df, name, host_id, host_name, 
+            neighbourhood_group, neighbourhood, latitude, 
+            longitude, room_type, price, 
+            minimum_nights, availability):
+    add_housing(df, name, host_id, host_name, 
+                    neighbourhood_group, neighbourhood, latitude, 
+                    longitude, room_type, price, 
+                    minimum_nights, availability
+                )
+    has_unsaved_changes(True)
+    update_data(update_data=True)
