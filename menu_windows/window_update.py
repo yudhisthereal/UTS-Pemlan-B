@@ -14,8 +14,7 @@ def onFrameConfigure(canvas):
 def update_data(id, new_values, update_func):
     for field, new_val in zip(WRITE_ALLOWED_FIELDS, new_values):
         update_housing(id, field, new_val)
-    thread = Thread(target=update_func, kwargs={'update_data' : True})
-    thread.start()
+    update_func(update_data=True)
 
 class WindowUpdate(tk.Toplevel):
     def __init__(self, parent, df, update_func):

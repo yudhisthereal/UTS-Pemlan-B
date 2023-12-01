@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from threading import Thread
 from functions.delete import delete_housing
 from functions.save_data import has_unsaved_changes
 from config import *
@@ -34,8 +35,11 @@ class WindowConfirm(tk.Toplevel):
                 command=self.destroy).pack(side=tk.LEFT, expand=True, pady=32)
         
     def func_ok(self):
-        delete_housing(self.df, self.id)
         messagebox.showinfo(message=f'Housing {self.id} Has Been Deleted!')
-        has_unsaved_changes(True)
-        self.update_func(update_data=True)
+        thread = Thread(target=delete_func, args=(self.df, self.id, self.update_func))
+        thread.start()
         self.destroy()
+
+def delete_func(df, id, update_func):
+    delete_housing(df, id)
+    update_func(update_data=True)

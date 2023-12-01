@@ -136,7 +136,7 @@ def darkstyle(root):
 
 def main_window():
     window = Tk()
-    window.geometry('1080x720+100+32')
+    window.geometry('1280x720+100+32')
     window.title("NYC Housing Admin")
     window.resizable(False, False)
     darkstyle(window)
