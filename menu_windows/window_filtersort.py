@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from threading import Thread
 from functions.show import get_filtered
 from config import COLUMNS_IN_SHOW, WIDTHS_IN_SHOW
 
@@ -49,6 +50,10 @@ class WindowFilterSort(tk.Toplevel):
                 command=self.destroy).pack(side=tk.LEFT, expand=True, pady=32)
     
     def func_ok(self):
-        self.df = get_filtered(self.df, self.selected_orderby.get(), self.selected_order.get() == 'Ascending')
-        self.update_df(self.df, COLUMNS_IN_SHOW, WIDTHS_IN_SHOW)
+        thread = Thread(target=sort_func, args=(self.update_df, self.df, self.selected_orderby.get(), self.selected_order.get() == 'Ascending'))
+        thread.start()
         self.destroy()
+
+def sort_func(update_df, df, selected_orderby, ascending):
+    df = get_filtered(df, selected_orderby, ascending)
+    update_df(self.df, COLUMNS_IN_SHOW, WIDTHS_IN_SHOW)
