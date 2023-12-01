@@ -4,15 +4,24 @@ from tkinter import ttk
 from functions.update import update_housing
 from functions.search import id_exists
 from functions.save_data import has_unsaved_changes
+from threading import Thread
 from config import WRITE_ALLOWED_FIELDS
 
 def onFrameConfigure(canvas):
     '''Reset the scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
+def update_data(id, new_values, update_func):
+    for field, new_val in zip(WRITE_ALLOWED_FIELDS, new_values):
+        update_housing(id, field, new_val)
+    thread = Thread(target=update_func, kwargs={'update_data' : True})
+    thread.start()
+
 class WindowUpdate(tk.Toplevel):
     def __init__(self, parent, df, update_func):
         super().__init__(parent)
+        self.find_housing_thread = Thread()
+        self.update_thread = Thread()
         self.df = df
         self.update_func = update_func
         self.id = tk.StringVar()
@@ -143,19 +152,23 @@ class WindowUpdate(tk.Toplevel):
 
     def func_ok(self):
         if self.validate_inputs():
-            for field, stringvar in zip(WRITE_ALLOWED_FIELDS, self.entries):
-                update_housing(self.id.get(), field, stringvar.get())
-
             messagebox.showinfo(message=f'Housing {self.name.get()} Has Been Updated!')
+
+            new_values = []
+            for stringvar in self.entries:
+                new_values.append(stringvar.get())
+            
+            update_thread = Thread(target=update_data, args=(self.id.get(), new_values, self.update_func))
+            update_thread.start()
+
             has_unsaved_changes(True)
-            self.update_func(update_data=True)
             self.destroy()
 
     def validate_inputs(self):
         for entry in self.numeric_entries:
             if not entry.get():
                 continue
-
+        
             try:
                 x = float(entry.get())
             except ValueError:
@@ -165,6 +178,11 @@ class WindowUpdate(tk.Toplevel):
         return True
     
     def find_housing(self):
+        if not self.find_housing_thread.is_alive():
+            self.find_housing_thread = Thread(target=self.__find_housing)
+            self.find_housing_thread.start()
+
+    def __find_housing(self):
         if not id_exists(self.id.get()):
             for widget in self.entry_widgets:
                 if widget['state'] == 'readonly':

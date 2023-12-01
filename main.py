@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from threading import Thread
 from functions.show import *
 from functions.search import *
 from functions.delete import *
@@ -19,7 +20,7 @@ import pandas as pd
 import socket
 from io import StringIO
 
-server_address = ('localhost', 4999)
+server_address = ('localhost', 81)
 
 SIZE = 10000
 
@@ -72,7 +73,8 @@ def update_shown_df(data=df, shown_cols=COLUMNS_IN_SHOW, shown_w=WIDTHS_IN_SHOW,
 class Table():
 
     def __init__(self, root, data, headers, widths):
-        self.create(root, data, headers, widths)
+        self.thread = Thread(target=self.create, args=(root, data, headers, widths))
+        self.thread.start()
 
     def create(self, root, data, headers, widths):
         self.canvas = Canvas(root)
@@ -114,6 +116,11 @@ class Table():
 
                 self.e.grid(row=i+1, column=j)
                 self.e.insert(END, data.iloc[i][header])
+            config_thread = Thread(target=self.canvas.config, kwargs={'scrollregion':self.canvas.bbox('all')})
+            config_thread.start()
+            
+        
+        root.update_idletasks()
 
     def destroy(self):
         self.canvas.destroy()
@@ -141,8 +148,8 @@ def main_window():
     return window
 
 
-def create_menu(root):
-    frame = ttk.Frame(root)
+def create_menu(window):
+    frame = ttk.Frame(window)
     frame.pack(side=TOP, pady=32)
 
     # menu_width = 10
@@ -167,9 +174,9 @@ def create_menu(root):
         widget.grid(row=0, column=i, padx=8, pady=5, sticky='nesw')
 
 
-def create_table(root):
+def create_table(window):
     global table
-    table = Table(root, shown_df, shown_columns, shown_widths)
+    table = Table(window, shown_df, shown_columns, shown_widths)
 
 
 def func_help():
@@ -229,6 +236,7 @@ def func_exit():
 # Main Window
 window = main_window()
 window.protocol('WM_DELETE_WINDOW', func_exit)
+
 
 # Content
 create_menu(window)
