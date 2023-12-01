@@ -13,8 +13,35 @@ from menu_windows.window_filtersort import WindowFilterSort
 from menu_windows.window_search import WindowSearch
 from menu_windows.window_add import WindowAdd
 from menu_windows.window_update import WindowUpdate
+from menu_windows.window_delete import WindowDelete
 import csv
 import pandas as pd
+import socket
+from io import StringIO
+
+server_address = ('localhost', 4999)
+
+SIZE = 10000
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(server_address)
+
+def send_file(new_file):
+
+    new_file = new_file.to_csv(index=False).strip('\n').split('\n')
+    new_file_string = '\r\n'.join(new_file)
+
+    s.send(new_file_string.encode('utf8'))
+    if os.path.exists(FILE_PATH):
+        os.remove(FILE_PATH)
+
+def recv_file():
+    message = s.recv(SIZE)
+    message = message.decode()
+    new_file = pd.read_csv(StringIO(message), sep=',')
+    new_file.to_csv(FILE_PATH, index=False)
+
+recv_file()
 
 if get_temp_path() == None:
     create_temp()
@@ -171,12 +198,15 @@ def func_update():
 
 
 def func_delete():
-    pass
+    global window
+    WindowDelete(window, df, update_shown_df).grab_set()
+    # pass
 
 
 def func_save():
     if has_unsaved_changes():
         save()
+        send_file(df)
         messagebox.showinfo(message='Saved Successfully!')
     else:
         messagebox.showinfo(message='No Unsaved Changes')
@@ -190,6 +220,7 @@ def func_exit():
             return
         elif should_save:
             save()
+            send_file(df)
     destroy_temp()
     window.destroy()
     quit()
@@ -205,3 +236,4 @@ create_table(window)
 
 if __name__ == '__main__':
     window.mainloop()
+    s.close()
